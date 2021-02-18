@@ -11,6 +11,15 @@ CREATE TABLE accounts (
     created_at date
 );
 
+CREATE TABLE projects (
+    project_key uuid unique,
+    account_id integer REFERENCES accounts (id),
+    name varchar(256),
+    use_codes boolean,
+    use_roles boolean,
+    created_at date
+);
+
 ----------------- TYPES ------------------
 CREATE TYPE failure_action AS (
     success boolean,
