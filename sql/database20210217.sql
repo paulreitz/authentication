@@ -17,6 +17,7 @@ CREATE TABLE projects (
     name varchar(256),
     use_codes boolean,
     use_roles boolean,
+    default_role integer,
     created_at date
 );
 
