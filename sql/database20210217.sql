@@ -77,6 +77,15 @@ CREATE TYPE project_type AS (
     created_at date
 );
 
+CREATE TYPE project_summary AS (
+    project_key uuid,
+    name varchar(256)
+);
+
+CREATE TYPE project_summary_array AS (
+    projects project_summary[]
+);
+
 ----------------- FUNCTIONS ------------------
 
 -------- CREATE_ACCOUNT-------- 
@@ -203,9 +212,32 @@ begin
             codes[current] = row(code.code, code.valid)::code_type;
             current = current + 1;
         end loop;
-        RAISE NOTICE 'running function with %', newCode;
         result = row_to_json(row(codes)::code_type_array);
     end if;
     return result;
 end;
 $addActivationCode$ language plpgsql;
+
+------------- GET PROJECTS ------------
+CREATE or replace function getProjects(accountId integer)
+returns json as $getProjects$
+declare
+    result json;
+    foundAccount record;
+    project record;
+    projects project_summary[] = '{}';
+    current integer = 1;
+begin
+    select * from accounts into foundAccount where id=accountId;
+    if not found then
+        result = row_to_json(row(false, 'No account found')::failure_action);
+    else
+        for project in select * from projects where account_id=accountId loop
+            projects[current] = row(project.project_key, project.name)::project_summary;
+            current = current + 1;
+        end loop;
+        result = row_to_json(row(projects)::project_summary_array);
+    end if;
+    return result;
+end;
+$getProjects$ language plpgsql;
