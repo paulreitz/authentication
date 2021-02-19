@@ -121,3 +121,35 @@ begin
     return result;
 end;
 $loginAccount$ language plpgsql;
+
+------ CREATE PROJECT ------
+CREATE or replace function createProject(accountId integer, projectName varchar(256))
+returns json as $createProject$
+declare
+    result json;
+    foundAccount record;
+    createdAt date = now();
+    projectKey uuid = uuid_generate_v4();
+begin
+    select * from accounts into foundAccount where id=accountId;
+    if not found then
+        result = row_to_json(row(false, 'No account found')::failure_action);
+    else
+        insert into projects 
+            (project_key, account_id, name, use_codes, use_roles, default_role, created_at)
+            VALUES (projectKey, accountId, projectName, true, false, 0, createdAt);
+        result = row_to_json(row(
+            projectKey,
+            accountId,
+            projectName,
+            true,
+            false,
+            0,
+            ARRAY[]::role_type[],
+            ARRAY[]::code_type[],
+            createdAt
+        )::project_type);
+    end if;
+    return result;
+end;
+$createProject$ language plpgsql;
