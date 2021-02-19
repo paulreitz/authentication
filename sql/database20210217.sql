@@ -21,6 +21,18 @@ CREATE TABLE projects (
     created_at date
 );
 
+CREATE TABLE roles (
+    project uuid REFERENCES projects (project_key),
+    level integer,
+    name varchar(256)
+);
+
+CREATE TABLE activation_codes (
+    project uuid REFERENCES projects (project_key),
+    code varchar(100),
+    valid boolean
+);
+
 ----------------- TYPES ------------------
 CREATE TYPE failure_action AS (
     success boolean,
@@ -32,6 +44,30 @@ CREATE TYPE account_type AS (
     id integer,
     user_name varchar(256),
     name varchar(256),
+    created_at date
+);
+
+CREATE TYPE role_type AS (
+    project uuid,
+    level integer,
+    name varchar(256)
+);
+
+CREATE TYPE code_type AS (
+    project uuid,
+    code varchar(100),
+    valid boolean
+);
+
+CREATE TYPE project_type AS (
+    project_key uuid,
+    account_id integer,
+    name varchar(256),
+    use_codes boolean,
+    use_roles boolean,
+    default_role integer,
+    roles role_type[],
+    codes code_type[],
     created_at date
 );
 
