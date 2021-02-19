@@ -61,6 +61,10 @@ CREATE TYPE code_type AS (
     valid boolean
 );
 
+CREATE TYPE code_type_array AS (
+    codes code_type[]
+);
+
 CREATE TYPE project_type AS (
     project_key uuid,
     account_id integer,
@@ -176,3 +180,32 @@ begin
     return result;
 end;
 $setRoles$ language plpgsql;
+
+--------- ADD ACTIVATION CODE ---------
+CREATE or replace function addActivationCode(projectKey uuid)
+returns json as $addActivationCode$
+declare
+    result json;
+    foundProject record;
+    code record;
+    codes code_type[] = '{}';
+    codeBase uuid = uuid_generate_v4();
+    newCode text;
+    current integer = 1;
+begin
+    select * from projects into foundProject where project_key=projectKey;
+    if not found then
+        result = row_to_json(row(false, 'No project found')::failure_action);
+    else
+        select split_part(CAST(codeBase AS text), '-', 5) into newCode;
+        insert into activation_codes (project, code, valid) VALUES (projectKey, newCode, true);
+        for code in select * from activation_codes where project=projectKey loop
+            codes[current] = row(code.code, code.valid)::code_type;
+            current = current + 1;
+        end loop;
+        RAISE NOTICE 'running function with %', newCode;
+        result = row_to_json(row(codes)::code_type_array);
+    end if;
+    return result;
+end;
+$addActivationCode$ language plpgsql;
