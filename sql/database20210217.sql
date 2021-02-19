@@ -48,13 +48,15 @@ CREATE TYPE account_type AS (
 );
 
 CREATE TYPE role_type AS (
-    project uuid,
     level integer,
     name varchar(256)
 );
 
+CREATE TYPE role_type_array AS (
+    roles role_type[]
+);
+
 CREATE TYPE code_type AS (
-    project uuid,
     code varchar(100),
     valid boolean
 );
@@ -153,3 +155,24 @@ begin
     return result;
 end;
 $createProject$ language plpgsql;
+
+--------- SET ROLES -------
+CREATE or replace function setRoles(projectKey uuid, roles role_type[])
+returns json as $setRoles$
+declare
+    result json;
+    foundProject record;
+begin
+    select * from projects into foundProject where project_key=projectKey;
+    if not found then
+        result = row_to_json(row(false, 'Project not found')::failure_action);
+    else
+        DELETE FROM roles where project=projectKey;
+        for ind in array_lower(roles, 1)..array_upper(roles, 1) loop
+            insert into roles (project, level, name) values (projectKey, roles[ind].level, roles[ind].name);
+        end loop;
+        result = row_to_json(row(roles)::role_type_array);
+    end if;
+    return result;
+end;
+$setRoles$ language plpgsql;
