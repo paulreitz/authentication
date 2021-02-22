@@ -241,3 +241,45 @@ begin
     return result;
 end;
 $getProjects$ language plpgsql;
+
+----------- GET SINGLE PROJECT ----------------
+CREATE or replace function getProject(projectKey uuid)
+returns json as $getProject$
+declare
+    result json;
+    foundProject record;
+    code record;
+    role record;
+    codes code_type[] = '{}';
+    userRoles role_type[] = '{}';
+    currentCode integer = 1;
+    currentRole integer = 1;
+begin
+    select * from projects into foundProject where project_key=projectKey;
+    if not found then
+        result = row_to_json(row(false, 'Project not found')::failure_action);
+    else
+        for code in select * from activation_codes where project=projectKey loop
+            codes[currentCode] = row(code.code, code.valid)::code_type;
+            currentCode = currentCode + 1;
+        end loop;
+        for role in select * from roles where project=projectKey loop
+            userRoles[currentRole] = row(role.level, role.name)::role_type;
+            currentRole = currentRole + 1;
+        end loop;
+
+        result = row_to_json(row(
+            projectKey,
+            foundProject.account_id,
+            foundProject.name,
+            foundProject.use_codes,
+            foundProject.use_roles,
+            foundProject.default_role,
+            userRoles,
+            codes,
+            foundProject.created_at
+        )::project_type);
+    end if;
+    return result;
+end;
+$getProject$ language plpgsql;
