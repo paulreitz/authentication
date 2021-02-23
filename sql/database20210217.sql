@@ -307,3 +307,15 @@ begin
     return result;
 end;
 $updateUseCodes$ language plpgsql;
+
+------------ Update Use Roles ----------------
+CREATE or replace function updateUseRoles(projectKey uuid, useRoles boolean)
+returns json as $updateUseRoles$
+declare
+    result json;
+begin
+    update projects set use_roles=useRoles where project_key=projectKey;
+    select getProject(projectKey) into result;
+    return result;
+end;
+$updateUseRoles$ language plpgsql;
