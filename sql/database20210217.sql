@@ -284,6 +284,7 @@ begin
 end;
 $getProject$ language plpgsql;
 
+------------- Update Project Name --------------
 CREATE or replace function updateProjectName(projectKey uuid, newName text)
 returns json as $updateProjectName$
 declare
@@ -294,3 +295,15 @@ begin
     return result;
 end;
 $updateProjectName$ language plpgsql;
+
+------------- Update Use Codes ---------------------
+CREATE or replace function updateUseCodes(projectKey uuid, useCodes boolean)
+returns json as $updateUseCodes$
+declare
+    result json;
+begin
+    update projects set use_codes=useCodes where project_key=projectKey;
+    select getProject(projectKey) into result;
+    return result;
+end;
+$updateUseCodes$ language plpgsql;
