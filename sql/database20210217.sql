@@ -283,3 +283,14 @@ begin
     return result;
 end;
 $getProject$ language plpgsql;
+
+CREATE or replace function updateProjectName(projectKey uuid, newName text)
+returns json as $updateProjectName$
+declare
+    result json;
+begin
+    update projects set name=newName where project_key=projectKey;
+    select getProject(projectKey) into result;
+    return result;
+end;
+$updateProjectName$ language plpgsql;
