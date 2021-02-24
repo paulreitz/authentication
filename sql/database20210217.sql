@@ -33,6 +33,15 @@ CREATE TABLE activation_codes (
     valid boolean
 );
 
+CREATE TABLE users (
+    user_key uuid,
+    project_id uuid REFERENCES projects (project_key),
+    user_name varchar(256),
+    display_name varchar(256),
+    password text,
+    created_at date
+);
+
 ----------------- TYPES ------------------
 CREATE TYPE failure_action AS (
     success boolean,
