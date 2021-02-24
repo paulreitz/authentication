@@ -37,7 +37,6 @@ CREATE TABLE users (
     user_key uuid,
     project_id uuid REFERENCES projects (project_key),
     user_name varchar(256),
-    display_name varchar(256),
     role integer,
     password text,
     created_at date
@@ -100,7 +99,6 @@ CREATE TYPE user_type AS (
     user_key uuid,
     project_id uuid,
     user_name varchar(256),
-    display_name varchar(256),
     role integer,
     created_at date
 );
@@ -383,7 +381,6 @@ begin
                 userKey,
                 projectKey,
                 userName,
-                userName,
                 foundProject.default_role,
                 crypt(userPass, gen_salt('bf')),
                 createdAt
@@ -392,7 +389,6 @@ begin
             result = row_to_json(row(
                 userKey,
                 projectKey,
-                userName,
                 userName,
                 foundProject.default_role,
                 createdAt
