@@ -38,6 +38,7 @@ CREATE TABLE users (
     project_id uuid REFERENCES projects (project_key),
     user_name varchar(256),
     display_name varchar(256),
+    role integer,
     password text,
     created_at date
 );
@@ -93,6 +94,15 @@ CREATE TYPE project_summary AS (
 
 CREATE TYPE project_summary_array AS (
     projects project_summary[]
+);
+
+CREATE TYPE user_type AS (
+    user_key uuid,
+    project_id uuid,
+    user_name varchar(256),
+    display_name varchar(256),
+    role integer,
+    created_at date
 );
 
 ----------------- FUNCTIONS ------------------
@@ -328,3 +338,66 @@ begin
     return result;
 end;
 $updateUseRoles$ language plpgsql;
+
+---------- CREATE NEW USER ----------
+CREATE or replace function createNewUser(projectKey uuid, userName varchar(256), userPass text, activationCode text default '')
+returns json as $createNewUser$
+declare
+    result json;
+    foundProject record;
+    foundUser record;
+    foundCode record;
+    isValid boolean;
+    userKey uuid = uuid_generate_v4();
+    createdAt date = now();
+begin
+    select * from projects into foundProject where project_key=projectKey;
+    if not found then -- project not found
+        isValid = false;
+        result = row_to_json(row(false, 'Project not found')::failure_action);
+    else -- project found
+        select * from users into foundUser where project_id=projectKey AND user_name=userName;
+        if not found then -- user not found
+            if foundProject.use_codes then
+                select * from activation_codes into foundCode where project=projectKey AND code=activationCode and valid=true;
+                if not found then -- activation code not found
+                    isValid = false;
+                    result = row_to_json(row(false, 'Invalid activation code')::failure_action);
+                else -- valid activation code
+                    isValid = true;
+                    update activation_codes set valid=false where project=projectKey and code=activationCode;
+                end if; -- end code not found
+            else 
+                isValid = true;
+            end if;
+        else -- user found
+            isValid = false;
+            result = row_to_json(row(false, 'User name already in use')::failure_action);
+        end if; -- end user not found
+    end if; -- end project not found
+
+    if isValid then 
+        insert into users 
+            (user_key, project_id, user_name, display_name, role, password, created_at) VALUES 
+            (
+                userKey,
+                projectKey,
+                userName,
+                userName,
+                foundProject.default_role,
+                crypt(userPass, gen_salt('bf')),
+                createdAt
+            );
+
+            result = row_to_json(row(
+                userKey,
+                projectKey,
+                userName,
+                userName,
+                foundProject.default_role,
+                createdAt
+            )::user_type);
+    end if;
+    return result;
+end;
+$createNewUser$ language plpgsql;
