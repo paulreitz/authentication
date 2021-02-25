@@ -420,3 +420,38 @@ begin
     return result;
 end;
 $loginUser$ language plpgsql;
+
+----------- UPDATE USER ROLE -------------
+CREATE or replace function updateUserRole(projectKey uuid, userKey uuid, newRole integer)
+returns json as $updateUserRole$
+declare
+    result json;
+    foundUser record;
+    foundRole record;
+    isValid boolean = true;
+begin
+    select * from roles into foundRole where project=projectKey AND level=newRole;
+    if not found then
+        isValid = false;
+        result = row_to_json(row(false, 'Invalid Role')::failure_action);
+    end if; 
+
+    select * from users into foundUser where user_key=userKey AND project_id=projectKey;
+    if not found then
+        isValid = false;
+        result = row_to_json(row(false, 'User not found')::failure_action);
+    end if;
+
+    if isValid then
+        update users set role=newRole where user_key=userKey AND project_id=projectKey;
+        result = row_to_json(row(
+            userKey,
+            projectKey,
+            foundUser.user_name,
+            newRole,
+            foundUser.created_at
+        )::user_type);
+    end if;
+    return result;
+end;
+$updateUserRole$ language plpgsql;
