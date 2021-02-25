@@ -103,6 +103,10 @@ CREATE TYPE user_type AS (
     created_at date
 );
 
+CREATE TYPE user_list AS (
+    users user_type[]
+);
+
 ----------------- FUNCTIONS ------------------
 
 -------- CREATE_ACCOUNT-------- 
@@ -455,3 +459,27 @@ begin
     return result;
 end;
 $updateUserRole$ language plpgsql;
+
+------------- LIST USERS --------------
+CREATE or replace function listUsers(projectKey uuid)
+returns json as $listUsers$
+declare
+    result json;
+    foundUser record;
+    users user_type[] = '{}';
+    current integer = 1;
+begin
+    for foundUser in select * from users where project_id=projectKey loop
+        users[current] = row(
+            foundUser.user_key,
+            projectKey,
+            foundUser.user_name,
+            foundUser.role,
+            foundUser.created_at
+        )::user_type;
+        current = current + 1;
+    end loop;
+    result = row_to_json(row(users)::user_list);
+    return result;
+end;
+$listUsers$ language plpgsql;
