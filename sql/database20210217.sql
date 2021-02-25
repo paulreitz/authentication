@@ -376,7 +376,7 @@ begin
 
     if isValid then 
         insert into users 
-            (user_key, project_id, user_name, display_name, role, password, created_at) VALUES 
+            (user_key, project_id, user_name, role, password, created_at) VALUES 
             (
                 userKey,
                 projectKey,
@@ -397,3 +397,26 @@ begin
     return result;
 end;
 $createNewUser$ language plpgsql;
+
+-------------- LOGIN USER ------------------
+CREATE or replace function loginUser(projectKey uuid, userName varchar(256), userPass text)
+returns json as $loginUser$
+declare
+    result json;
+    foundUser record;
+begin
+    select * from users into foundUser where project_id=projectKey AND user_name=userName AND password=crypt(userPass, password);
+    if not found then
+        result = row_to_json(row(false, 'User name or password incorrect')::failure_action);
+    else
+        result = row_to_json(row(
+            foundUser.user_key,
+            projectKey,
+            userName,
+            foundUser.role,
+            foundUser.created_at
+        )::user_type);
+    end if;
+    return result;
+end;
+$loginUser$ language plpgsql;
