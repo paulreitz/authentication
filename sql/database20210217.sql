@@ -43,6 +43,11 @@ CREATE TABLE users (
 );
 
 ----------------- TYPES ------------------
+CREATE TYPE success_action AS (
+    success boolean,
+    message text
+);
+
 CREATE TYPE failure_action AS (
     success boolean,
     message text
@@ -494,3 +499,23 @@ begin
     return result;
 end;
 $listUsers$ language plpgsql;
+
+----------------- DELETE USER -----------------------
+CREATE or replace function deleteUser(projectKey uuid, userKey uuid)
+returns json as $deleteUser$
+declare
+    result json;
+    foundUser record;
+begin
+    select * from users into foundUser where project_id=projectKey AND user_key=userKey;
+    if not found then
+        -- Could just fail silently, but better to return a failure action indicating
+        -- that the user being deleted doesn't exist in the database.
+        result = row_to_json(row(false, 'User does not exist')::failure_action);
+    else 
+        delete from users where project_key=projectKey AND user_key=userKey;
+        result = row_to_json(row(true, 'User successfully deleted')::success_action);
+    end if;
+    return result;
+end;
+$deleteUser$ language plpgsql;
