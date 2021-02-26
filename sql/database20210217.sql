@@ -519,3 +519,25 @@ begin
     return result;
 end;
 $deleteUser$ language plpgsql;
+
+------------ DELETE PROJECT -----------------------
+CREATE or replace function deleteProject(projectKey uuid)
+returns json as $deleteProject$
+declare
+    result json;
+    foundProject record;
+begin 
+    select * from projects into foundProject where project_key=projectKey;
+    if not found then
+        -- don't just fail silently
+        result = row_to_json(row(false, 'Project does not exist')::failure_action);
+    else
+        delete from roles where project=projectKey;
+        delete from activation_codes where project=projectKey;
+        delete from users where project_id=projectKey;
+        delete from projects where project_key=projectKey;
+        result = row_to_json(row(true, 'Project deleted')::success_action);
+    end if;
+    return result;
+end;
+$deleteProject$ language plpgsql;
