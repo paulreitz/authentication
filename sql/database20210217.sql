@@ -62,6 +62,7 @@ CREATE TYPE role_type AS (
 );
 
 CREATE TYPE role_type_array AS (
+    success boolean,
     roles role_type[]
 );
 
@@ -71,10 +72,12 @@ CREATE TYPE code_type AS (
 );
 
 CREATE TYPE code_type_array AS (
+    success boolean,
     codes code_type[]
 );
 
 CREATE TYPE project_type AS (
+    success boolean,
     project_key uuid,
     account_id integer,
     name varchar(256),
@@ -92,10 +95,12 @@ CREATE TYPE project_summary AS (
 );
 
 CREATE TYPE project_summary_array AS (
+    success boolean,
     projects project_summary[]
 );
 
 CREATE TYPE user_type AS (
+    success boolean,
     user_key uuid,
     project_id uuid,
     user_name varchar(256),
@@ -104,6 +109,7 @@ CREATE TYPE user_type AS (
 );
 
 CREATE TYPE user_list AS (
+    success boolean,
     users user_type[]
 );
 
@@ -175,6 +181,7 @@ begin
             (project_key, account_id, name, use_codes, use_roles, default_role, created_at)
             VALUES (projectKey, accountId, projectName, true, false, 0, createdAt);
         result = row_to_json(row(
+            true,
             projectKey,
             accountId,
             projectName,
@@ -205,7 +212,7 @@ begin
         for ind in array_lower(roles, 1)..array_upper(roles, 1) loop
             insert into roles (project, level, name) values (projectKey, roles[ind].level, roles[ind].name);
         end loop;
-        result = row_to_json(row(roles)::role_type_array);
+        result = row_to_json(row(true, roles)::role_type_array);
     end if;
     return result;
 end;
@@ -233,7 +240,7 @@ begin
             codes[current] = row(code.code, code.valid)::code_type;
             current = current + 1;
         end loop;
-        result = row_to_json(row(codes)::code_type_array);
+        result = row_to_json(row(true, codes)::code_type_array);
     end if;
     return result;
 end;
@@ -257,7 +264,7 @@ begin
             projects[current] = row(project.project_key, project.name)::project_summary;
             current = current + 1;
         end loop;
-        result = row_to_json(row(projects)::project_summary_array);
+        result = row_to_json(row(true, projects)::project_summary_array);
     end if;
     return result;
 end;
@@ -290,6 +297,7 @@ begin
         end loop;
 
         result = row_to_json(row(
+            true,
             projectKey,
             foundProject.account_id,
             foundProject.name,
@@ -391,6 +399,7 @@ begin
             );
 
             result = row_to_json(row(
+                true,
                 userKey,
                 projectKey,
                 userName,
@@ -414,6 +423,7 @@ begin
         result = row_to_json(row(false, 'User name or password incorrect')::failure_action);
     else
         result = row_to_json(row(
+            true,
             foundUser.user_key,
             projectKey,
             userName,
@@ -471,6 +481,7 @@ declare
 begin
     for foundUser in select * from users where project_id=projectKey loop
         users[current] = row(
+            true,
             foundUser.user_key,
             projectKey,
             foundUser.user_name,
@@ -479,7 +490,7 @@ begin
         )::user_type;
         current = current + 1;
     end loop;
-    result = row_to_json(row(users)::user_list);
+    result = row_to_json(row(true, users)::user_list);
     return result;
 end;
 $listUsers$ language plpgsql;
