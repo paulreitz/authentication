@@ -4,6 +4,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+const AccountController = require('./controllers/AccountController');
+
 const router = express.Router();
 const publicPath = path.join(__dirname, '..', 'build');
 const port = process.env.PORT || 3008;
@@ -11,6 +13,12 @@ const port = process.env.PORT || 3008;
 app.unsubscribe(cors());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.json());
+
+[
+    new AccountController(router, 'account')
+].forEach(controller => {
+    controller.setPaths();
+})
 
 app.use('/api', router);
 app.use(express.static(publicPath));

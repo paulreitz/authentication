@@ -9,7 +9,7 @@ class BaseController {
     }
 
     endPointPath(endpoint) {
-        return `${this.path}/${endpoint}`;
+        return `/${this.path}/${endpoint}`;
     }
 
     makeGetPath(endpoint, callback) {
@@ -21,4 +21,4 @@ class BaseController {
     }
 }
 
-export default BaseController;
+module.exports = BaseController;
