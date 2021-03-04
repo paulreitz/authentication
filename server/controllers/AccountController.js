@@ -3,12 +3,9 @@ const AccountDB = require('../database/accountdb');
 const getAccountToken = require('../utils/token').getAccountToken;
 
 class AccountController extends BaseController {
-    constructor(router, path) {
-        super(router, path);
-        this.accountDB = new AccountDB();
-    }
 
     setPaths() {
+        this.accountDB = new AccountDB();
         this.makePostPath('create', this.createAccount);
         this.makePostPath('auth', this.loginAccount);
     }

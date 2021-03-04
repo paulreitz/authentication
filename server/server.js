@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const AccountController = require('./controllers/AccountController');
+const ProjectController = require('./controllers/ProjectController');
 
 const router = express.Router();
 const publicPath = path.join(__dirname, '..', 'build');
@@ -15,7 +16,8 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.json());
 
 [
-    new AccountController(router, 'account')
+    new AccountController(router, 'account'),
+    new ProjectController(router, 'project')
 ].forEach(controller => {
     controller.setPaths();
 })

@@ -13,6 +13,19 @@ function getAccountToken(data) {
     return accountData;
 }
 
+function verifyToken(header) {
+    let token = header.split(' ')[1];
+    let dataObject;
+    try {
+        dataObject = jwt.verify(token, process.env.SECRET);
+    }
+    catch(err) {
+        dataObject = null;
+    }
+    return dataObject;
+}
+
 module.exports = {
-    getAccountToken
+    getAccountToken,
+    verifyToken
 }

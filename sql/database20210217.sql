@@ -203,6 +203,7 @@ end;
 $createProject$ language plpgsql;
 
 --------- SET ROLES -------
+-- select setRoles('62673224-d25f-4bcf-ab1a-6f330c2e1644', ARRAY[row(0,'Owner')::role_type,row(1,'Manager')::role_type,row(2,'User')::role_type]);
 CREATE or replace function setRoles(projectKey uuid, roles role_type[])
 returns json as $setRoles$
 declare
