@@ -11,7 +11,7 @@ const router = express.Router();
 const publicPath = path.join(__dirname, '..', 'build');
 const port = process.env.PORT || 3008;
 
-app.unsubscribe(cors());
+app.use(cors());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.json());
 
