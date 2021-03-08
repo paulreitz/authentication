@@ -97,6 +97,18 @@ class ProjectDB extends BaseDB {
             });
         });
     }
+
+    deleteProject = (project) => {
+        return new Promise((resolve, reject) => {
+            const query = `SELECT deleteProject('${project}');`;
+            this.pool.query(query, (err, result) => {
+                if (err) {
+                    reject(err);
+                }
+                resolve(result.rows[0].deleteproject);
+            })
+        })
+    }
 }
 
 module.exports = ProjectDB;

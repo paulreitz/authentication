@@ -13,6 +13,7 @@ class ProjectController extends BaseController {
         this.makeGetPath('project/:id', this.getProject);
         this.makePostPath('name/:id', this.updateProjectName);
         this.makePostPath('use/:id', this.updateProjectUses);
+        this.makeDeletePath('', this.deleteProject);
     }
 
     createProject = (req, res) => {
@@ -120,6 +121,21 @@ class ProjectController extends BaseController {
                 ? this.projectDB.updateUseCodes(req.params.id, req.body.useCodes)
                 : this.projectDB.updateUseRoles(req.params.id, req.body.useRoles);
             call
+            .then(result => {
+                res.status(200).send(result);
+            })
+            .catch(error => {
+                res.status(200).send({error});
+            });
+        }
+        else {
+            res.status(200).send({success: false, message: 'Invalid information'});
+        }
+    }
+
+    deleteProject = (req, res) => {
+        if (req.body && req.body.project) {
+            this.projectDB.deleteProject(req.body.project)
             .then(result => {
                 res.status(200).send(result);
             })
