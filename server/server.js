@@ -6,6 +6,7 @@ const cors = require('cors');
 
 const AccountController = require('./controllers/AccountController');
 const ProjectController = require('./controllers/ProjectController');
+const UserController = require('./controllers/UserController');
 
 const router = express.Router();
 const publicPath = path.join(__dirname, '..', 'build');
@@ -17,7 +18,8 @@ app.use(express.json());
 
 [
     new AccountController(router, 'account'),
-    new ProjectController(router, 'project')
+    new ProjectController(router, 'project'),
+    new UserController(router, 'user')
 ].forEach(controller => {
     controller.setPaths();
 })

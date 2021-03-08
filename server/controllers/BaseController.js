@@ -19,6 +19,10 @@ class BaseController {
     makePostPath(endpoint, callback) {
         this.router.route(this.endPointPath(endpoint)).post(callback);
     }
+
+    makeDeletePath(endpoint, callback) {
+        this.router.route(this.endPointPath(endpoint)).delete(callback);
+    }
 }
 
 module.exports = BaseController;

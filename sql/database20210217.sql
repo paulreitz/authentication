@@ -465,6 +465,7 @@ begin
     if isValid then
         update users set role=newRole where user_key=userKey AND project_id=projectKey;
         result = row_to_json(row(
+            true,
             userKey,
             projectKey,
             foundUser.user_name,
@@ -514,7 +515,7 @@ begin
         -- that the user being deleted doesn't exist in the database.
         result = row_to_json(row(false, 'User does not exist')::failure_action);
     else 
-        delete from users where project_key=projectKey AND user_key=userKey;
+        delete from users where project_id=projectKey AND user_key=userKey;
         result = row_to_json(row(true, 'User successfully deleted')::success_action);
     end if;
     return result;
