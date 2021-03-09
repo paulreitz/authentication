@@ -1,0 +1,4 @@
+export default {
+    SET_ACCOUNT: 'SET_ACCOUNT',
+    UNSET_ACCOUNT: 'UNSET_ACCOUNT'
+};
