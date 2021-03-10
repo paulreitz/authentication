@@ -13,7 +13,9 @@ export default createMuiTheme({
             default: `${colors.LIGHT_BACKGROUND}`
         },
         common: {
-            lighterBlue: `${colors.LIGHTER_BACKGROUND}`
+            lightBlue: `${colors.LIGHT_BACKGROUND}`,
+            lighterBlue: `${colors.LIGHTER_BACKGROUND}`,
+            darkerGreen: `${colors.DARKER_BACKGROUND}`
         }
     }
 })

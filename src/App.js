@@ -6,12 +6,15 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import store from './store/configureStore';
 import theme from './theme/theme';
 
+import Header from './components/Header';
+
 function App() {
   return (
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <div>Next: Header</div>
+        <Header />
+        <div>Next: Stub out components</div>
       </ThemeProvider>
     </Provider>
   );

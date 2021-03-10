@@ -5,6 +5,6 @@ export const setAccount = (accountData) => ({
     accountData
 });
 
-export const unsetAction = () => ({
+export const unsetAccount = () => ({
     type: accountActions.UNSET_ACCOUNT
 });
