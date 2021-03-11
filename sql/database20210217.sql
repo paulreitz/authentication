@@ -13,7 +13,7 @@ CREATE TABLE accounts (
 
 CREATE TABLE projects (
     project_key uuid unique,
-    account_id integer REFERENCES accounts (id),
+    account_id integer REFERENCES accounts (id) on delete cascade on update cascade,
     name varchar(256),
     use_codes boolean,
     use_roles boolean,
@@ -22,20 +22,20 @@ CREATE TABLE projects (
 );
 
 CREATE TABLE roles (
-    project uuid REFERENCES projects (project_key),
+    project uuid REFERENCES projects (project_key) on delete cascade on update cascade,
     level integer,
     name varchar(256)
 );
 
 CREATE TABLE activation_codes (
-    project uuid REFERENCES projects (project_key),
+    project uuid REFERENCES projects (project_key) on delete cascade on update cascade,
     code varchar(100),
     valid boolean
 );
 
 CREATE TABLE users (
     user_key uuid,
-    project_id uuid REFERENCES projects (project_key),
+    project_id uuid REFERENCES projects (project_key) on delete cascade on update cascade,
     user_name varchar(256),
     role integer,
     password text,

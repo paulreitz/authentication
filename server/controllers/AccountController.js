@@ -1,6 +1,7 @@
 const BaseController = require('./BaseController');
 const AccountDB = require('../database/accountdb');
 const getAccountToken = require('../utils/token').getAccountToken;
+const verifyToken = require('../utils/token').verifyToken;
 
 class AccountController extends BaseController {
 
@@ -8,6 +9,7 @@ class AccountController extends BaseController {
         this.accountDB = new AccountDB();
         this.makePostPath('create', this.createAccount);
         this.makePostPath('auth', this.loginAccount);
+        this.makePostPath('refresh', this.refreshToken);
     }
 
     createAccount = (req, res) => {
@@ -43,6 +45,27 @@ class AccountController extends BaseController {
             .catch(error => {
                 res.status(200).send({error});
             })
+        }
+    }
+
+    refreshToken = (req, res) => {
+        if (req.body && req.body.token) {
+            const data = verifyToken(`token ${req.body.token}`);
+            if (data) {
+                const refreshData = getAccountToken({
+                    id: data.id,
+                    user_name: data.userName,
+                    name: data.displayName,
+                    created_at: data.createdAt
+                });
+                res.status(200).send(refreshData);
+            }
+            else {
+                res.status(200).send({success: false, message: 'Invalid Token'});
+            }
+        }
+        else {
+            res.status(200).send({success:false, message: 'No Token Provided'});
         }
     }
 }
