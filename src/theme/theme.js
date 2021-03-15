@@ -10,12 +10,16 @@ export default createMuiTheme({
             main: `${colors.TITLE_FONT}`
         },
         background: {
-            default: `${colors.LIGHT_BACKGROUND}`
+            default: `${colors.LIGHT_BACKGROUND}`,
+            paper: `${colors.LIGHTER_BACKGROUND}`
         },
         common: {
             lightBlue: `${colors.LIGHT_BACKGROUND}`,
             lighterBlue: `${colors.LIGHTER_BACKGROUND}`,
             darkerGreen: `${colors.DARKER_BACKGROUND}`
+        },
+        error: {
+            main: `${colors.ERROR}`
         }
     }
 })

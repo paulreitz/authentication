@@ -5,14 +5,15 @@ import reportWebVitals from './reportWebVitals';
 import store from './store/configureStore';
 import { setAccount } from './store/actions/AccountActions';
 import { serverCall } from './utils/server';
+import { setCurrentProjectList } from './utils/projectUtils';
 
 const token = window.localStorage.getItem('token');
 if (token) {
   serverCall('account/refresh', {token}, 'post')
   .then(result => {
-    console.log(result);
     store.dispatch(setAccount(result));
     window.localStorage.setItem('token', result.token);
+    setCurrentProjectList();
   });
 }
 

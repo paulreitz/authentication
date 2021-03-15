@@ -12,6 +12,7 @@ import Block from '@material-ui/icons/Block';
 import { setAccount } from '../store/actions/AccountActions';
 import { serverCall } from '../utils/server';
 import { connect } from 'react-redux';
+import { setCurrentProjectList } from '../utils/projectUtils';
 
 const iconSize = 40;
 
@@ -119,6 +120,7 @@ export function Landing(props) {
                     }
                     setStore(result.token);
                     props.setAccount(accountData);
+                    setCurrentProjectList();
                 }
                 else {
                     setErrorMessage(result.message);
@@ -152,6 +154,7 @@ export function Landing(props) {
                     }
                     setStore(result.token);
                     props.setAccount(accountData);
+                    setCurrentProjectList();
                 }
                 else {
                     setErrorMessage(result.message);

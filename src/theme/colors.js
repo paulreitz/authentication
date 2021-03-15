@@ -7,5 +7,6 @@ export default {
     LIGHTER_FONT: '#ECF2EB',
     DARK_FONT: '#4C5951',
     DARKER_FONT: '#20402C',
-    TITLE_FONT: '#C1C0ED'
+    TITLE_FONT: '#C1C0ED',
+    ERROR: '#A01922'
 }

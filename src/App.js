@@ -25,7 +25,7 @@ function App() {
           <Switch>
             <PublicRoute exact path="/" component={Landing} />
             <PrivateRoute exact path="/dashboard" component={Dashbourd} />
-            <PrivateRoute path="project/:id" component={Project} />
+            <PrivateRoute path="/project/:id" component={Project} />
             <Route path="*" component={NotFound} />
           </Switch>
         </BrowserRouter>
