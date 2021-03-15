@@ -1,0 +1,4 @@
+export default {
+    SET_PROJECT: 'SET_PROJECT',
+    CLEAR_PROJECT: 'CLEAR_PROJECT'
+}

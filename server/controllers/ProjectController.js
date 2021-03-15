@@ -9,8 +9,8 @@ class ProjectController extends BaseController {
         this.makePostPath('create', this.createProject);
         this.makePostPath('roles', this.setRoles);
         this.makePostPath('code', this.addActivationCode);
-        this.makePostPath('project', this.getProjects);
-        this.makeGetPath('project/:id', this.getProject);
+        this.makePostPath('project', this.getProjects); // TODO: This creates a redundant path - fix.
+        this.makeGetPath(':id', this.getProject);
         this.makePostPath('name/:id', this.updateProjectName);
         this.makePostPath('use/:id', this.updateProjectUses);
         this.makeDeletePath('', this.deleteProject);
