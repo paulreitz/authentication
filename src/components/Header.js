@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -18,6 +19,9 @@ const useStyles = makeStyles(theme => ({
     },
     icon: {
         marginRight: 5
+    },
+    title: {
+        textDecoration: 'none'
     }
 }));
 
@@ -28,7 +32,7 @@ export function Header(props) {
             <AppBar className={classes.appbar} position="fixed" elevation={0}>
                 <Toolbar>
                     <VerifiedUser className={classes.icon} color="primary" />
-                    <Typography variant="h5" color="primary">Authentication Service</Typography>
+                    <Typography className={classes.title} variant="h5" color="primary" component={Link} to="/">Authentication Service</Typography>
                 </Toolbar>
             </AppBar>
             <Box className={classes.toolbarMargin} />
